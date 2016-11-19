@@ -1,0 +1,14 @@
+Input Matrices: 	Klein_barrier_20nm_angled_1250steps.mat
+wave vector mag: 	.15
+wave drive style: 	gauss
+wave drive param: 	0,12,0,0
+plot results[Y/N]: 	Y
+Number of timesteps: 	1250
+timestep size:        	1.0
+B-field multiplier:	1
+Potental multiplier:	sweep1
+sweep parameter:	.45,-.15,201
+
+number of cores:	1
+output file path:	./angled_data/
+output filename:	Vsweep_20nm_angled_
