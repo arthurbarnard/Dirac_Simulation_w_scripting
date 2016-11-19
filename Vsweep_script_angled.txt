@@ -3,7 +3,7 @@ wave vector mag: 	.15
 wave drive style: 	gauss
 wave drive param: 	0,12,0,0
 plot results[Y/N]: 	Y
-Number of timesteps: 	1250
+Number of timesteps: 	2500
 timestep size:        	1.0
 B-field multiplier:	1
 Potental multiplier:	sweep1
