@@ -20,7 +20,7 @@ pi=np.pi
 # The properties of the sourced electrons are defined by the set_p method. p=2*pi/lambda is the injected electron
 # wave-vector magnitude, and theta is the wave-vector direction. The code computes plane-wave injection with
 # the expectation that the user can sum several solutions to localize the injection.
-# there is also a gaussian_beam method wherein you set the angle, FWHM, and central location of the beam. 	
+# there is also a gaussian_beam method wherein you set the angle, FWHM, and central location of the beam. 
 # 
 # For boundary conditions, the u-lattice is set to zero in the "No_prop" region, and the v-lattice is free. The drive
 # wave is implemented only on the v-lattice. In this sense, the "u" lattice is the master, and the "v" the slave. 

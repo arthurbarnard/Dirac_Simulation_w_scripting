@@ -25,6 +25,7 @@ def main():
 				"wave drive style",
 				"wave drive param",
 				"plot results",
+				"save timesteps",
 				"Number of timesteps",
 				"timestep size",
 				"B-field multiplier",
@@ -44,6 +45,7 @@ def main():
 				"list",
 				"floats",
 				"Y_N",
+				"Y_N",
 				"int",
 				"float",
 				"float",
@@ -60,6 +62,7 @@ def main():
 				"inject_style",
 				"inject_params",
 				"plot_results",
+				"save_time",
 				"N_t",
 				"dt",
 				"A_mult",
@@ -116,19 +119,21 @@ def main():
 	
 	
 	jobs=[]
-	n=0 #n is the 
+	n1=0 #n is the 
 	
 	#sweeps through the generalized sweep parameter
 	for i,sweep_N in enumerate(sweep_num):
 		if 'sweep_line' in locals(): 
 			line=sweep_line.replace("sweep1",str(sweep_N))
+			print line
 			if Input_type[sweep_lnum]=="float":
 				exec(Input_var_names[sweep_lnum]+" = float(line.split(\"\\t\",1)[1].split(\"\\n\")[0])")
 			if Input_type[sweep_lnum]=="int":
 				exec(Input_var_names[k]+" = int(line.split(\"\\t\",1)[1].split(\"\\n\")[0])")		
 			if Input_type[sweep_lnum]=="floats":
 				exec(Input_var_names[sweep_lnum]+" = [float(n) for n in (line.split(\"\\t\",1)[1].split(\"\\n\")[0].split(\",\"))]")
-			
+
+								
 		print path_out+fname_out+("%03d" % i)+".mat"
 		
 		# checks if the output file already exists
@@ -136,16 +141,16 @@ def main():
 			
 			#registers N_core number of parallel simulations
 			if N_core>1:
-				p = multiprocessing.Process(target=Run_Dirac, args=(fname_in,p0_in,inject_style,inject_params,plot_results,N_t, dt, A_mult,V_mult, path_out,fname_out+("%03d" % i)))
+				p = multiprocessing.Process(target=Run_Dirac, args=(fname_in,p0_in,inject_style,inject_params,plot_results,save_time,N_t, dt, A_mult,V_mult, path_out,fname_out+("%03d" % i)))
 				jobs.append(p)
 				p.start()
-				n+=1
-				if n>=N_core:
+				n1+=1
+				if n1>=N_core:
 					p.join()
-					print n
-					n=0
+					print n1
+					n1=0
 			else:
-				Run_Dirac(fname_in,p0_in,inject_style,inject_params,plot_results,N_t, dt, 	A_mult,V_mult, path_out,fname_out+("%03d" % i))
+				Run_Dirac(fname_in,p0_in,inject_style,inject_params,plot_results,save_time,N_t, dt, A_mult,V_mult, path_out,fname_out+("%03d" % i))
 
 		print fname_in
 		print p0_in

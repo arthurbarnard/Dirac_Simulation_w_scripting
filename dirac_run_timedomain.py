@@ -19,7 +19,9 @@ from my_two_clim import my_two_clim
 # a colormap gui is built to show the simulation as it progresses. N_timesteps and dt set the timing parameters.
 # Bmult and Vmult are floats that scale the input A or V matrices. #outpath and outfilename determine the place
 # where the output is saved.
-def Run_Dirac(initfile,p0,drivestyle,drive_param,plot_results,N_timesteps, dt, 	Bmult,Vmult, outpath,outfilename):
+def Run_Dirac(initfile,p0,drivestyle,drive_param,plot_results,save_time,N_timesteps, dt,Bmult, Vmult , outpath,outfilename):
+
+	#save_time=True
 	#checks if it's a .mat file. later will also accept npz files.
 	if initfile.split(".",1)[1]=="mat":
 	
@@ -32,6 +34,8 @@ def Run_Dirac(initfile,p0,drivestyle,drive_param,plot_results,N_timesteps, dt, 	
 		if 'Yoffset' in mat: Yoffset=mat['Yoffset']
 		
 		if 'V' in mat: V=mat['V']
+		if 'n0' in mat: n0=mat['n0']
+		if 'n00' in mat: n00=mat['n00']
 		if 'AbsMat' in mat: AbsMat=mat['AbsMat']
 		if 'DriveMat' in mat: DriveMat=mat['DriveMat']
 		if 'AxMat' in mat: AxMat=mat['AxMat']
@@ -43,9 +47,23 @@ def Run_Dirac(initfile,p0,drivestyle,drive_param,plot_results,N_timesteps, dt, 	
 			v2=mat['v2']
 			if 't' in mat: t=mat['t']
 			
+			
+		
+	if not os.path.exists(outpath):
+		os.makedirs(outpath)
+		
 	myDirac=dirac_sheet(0,(Nx,Ny),dt,dx,Xoffset,Yoffset)
 	#sets properties that were specified in the .mat file. If you don't want 
 	if 'V' in mat: myDirac.set_V(V*Vmult)
+	if 'n0' in mat:
+		n1=-p0**2
+		n2=(Vmult-p0)**2*np.sign(Vmult-p0)
+		n=n0*(n2-n1)+n1
+		if 'n00' in mat: n+=n00
+		V=np.sqrt(np.abs(n))*np.sign(n)+p0
+		myDirac.set_V(V)
+		
+	if 'V0' in mat: myDirac.set_V(V*Vmult+mat['V0'])
 	if 'AbsMat' in mat: myDirac.set_Absorb_mat(AbsMat)
 	if 'DriveMat' in mat: myDirac.set_Drive_mat(DriveMat)
 	if 'NoPropMat' in mat: myDirac.set_No_prop_mat(NoPropMat)
@@ -88,12 +106,16 @@ def Run_Dirac(initfile,p0,drivestyle,drive_param,plot_results,N_timesteps, dt, 	
 			if np.mod(i,10)==0:
 				root.update()
 				view_gui.set_both(np.real(myDirac.u1),np.real(np.abs(myDirac.v1)**2)+np.real(np.abs(myDirac.u1)**2))
-			
-			
-	
+
+		
+		if save_time:
+			if np.mod(i,10)==0:
+				mdict={}
+				mdict['u1']=myDirac.u1
+				mdict['v1']=myDirac.v1
+				scipy.io.savemat(outpath+outfilename+'_time_'+("%03d" % np.int(i/10))+'.mat',mdict)
+
 	#this block packages data and outputs into a .mat file.
-	if not os.path.exists(outpath):
-		os.makedirs(outpath)
 	mdict={}
 	mdict['u1']=myDirac.u1
 	mdict['u2']=myDirac.u2
