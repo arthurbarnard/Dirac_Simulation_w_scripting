@@ -5,12 +5,17 @@ import Tkinter as tk
 import tkFileDialog as filedialog
 from dirac_run_timedomain import Run_Dirac
 import multiprocessing
+import sys
 
 def main():
 	# brings up a GUI window to pick the script file to run
-	root = tk.Tk()
-	root.withdraw()
-	fname = filedialog.askopenfilename()
+	nargin=len(sys.argv)-1
+	if nargin==0:
+		root = tk.Tk()
+		root.withdraw()
+		fname = filedialog.askopenfilename()
+	else:
+		fname = sys.argv[1]
 	
 	#read in the file
 	with open(fname) as f:
