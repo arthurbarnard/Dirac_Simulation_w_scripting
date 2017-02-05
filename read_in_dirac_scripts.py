@@ -81,7 +81,7 @@ def main():
 	for i, input_var in enumerate(Input_var_names):
 		exec(input_var+" = []")
 		
-	#reads through script file linne by line
+	#reads through script file line by line
 	for i, line in enumerate(content):
 		
 		# looks for tab in a line as a signal of data input
@@ -130,14 +130,13 @@ def main():
 	for i,sweep_N in enumerate(sweep_num):
 		if 'sweep_line' in locals(): 
 			line=sweep_line.replace("sweep1",str(sweep_N))
-			print line
+			print line, Input_var_names[sweep_lnum]
 			if Input_type[sweep_lnum]=="float":
 				exec(Input_var_names[sweep_lnum]+" = float(line.split(\"\\t\",1)[1].split(\"\\n\")[0])")
 			if Input_type[sweep_lnum]=="int":
 				exec(Input_var_names[k]+" = int(line.split(\"\\t\",1)[1].split(\"\\n\")[0])")		
 			if Input_type[sweep_lnum]=="floats":
 				exec(Input_var_names[sweep_lnum]+" = [float(n) for n in (line.split(\"\\t\",1)[1].split(\"\\n\")[0].split(\",\"))]")
-
 								
 		print path_out+fname_out+("%03d" % i)+".mat"
 		

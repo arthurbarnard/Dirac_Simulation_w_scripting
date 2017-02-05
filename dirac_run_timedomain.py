@@ -62,7 +62,7 @@ def Run_Dirac(initfile,p0,drivestyle,drive_param,plot_results,save_time,N_timest
 		if 'n00' in mat: n+=n00
 		V=np.sqrt(np.abs(n))*np.sign(n)+p0
 		myDirac.set_V(V)
-		
+	myDirac.set_Bfield(Bmult)
 	if 'V0' in mat: myDirac.set_V(V*Vmult+mat['V0'])
 	if 'AbsMat' in mat: myDirac.set_Absorb_mat(AbsMat)
 	if 'DriveMat' in mat: myDirac.set_Drive_mat(DriveMat)
