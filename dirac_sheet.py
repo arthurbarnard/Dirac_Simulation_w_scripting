@@ -47,6 +47,7 @@ class dirac_sheet:
 		self.p0=2*pi/100.0			#Drive wave-vector magnitude
 		self.theta=0				#Drive wave-vector direction
 		self.massorV=False			#encodes whether m or V is nonzero
+		self.Bfiled=False
 		self.px=self.p0*np.cos(self.theta)
 		self.py=self.p0*np.sin(self.theta)
 		self.y, self.x = np.mgrid[slice((0-round(self.Ngrid_y/2)),(self.Ngrid_y-round(self.Ngrid_y/2)),1),
@@ -129,7 +130,14 @@ class dirac_sheet:
 		self.u20=np.exp(1j*(self.px*self.xhalf+self.py*self.yhalf))
 		self.v10=np.exp(1j*(self.px*self.xhalf+self.py*self.y+self.phi_p))
 		self.v20=np.exp(1j*(self.px*self.x+self.py*self.yhalf+self.phi_p))
-		
+	
+	def set_Bfield(self,B):
+		self.Bfield=(B!=0)
+		self.iAxAy1=B*self.xhalf
+		self.iAxAy2=B*self.x
+		self.iAxAy3=B*self.x
+		self.iAxAy4=B*self.xhalf
+
 	def set_gaussian_beam(self,p0,theta0,delta_theta,x0,y0):
 		# sets a gaussian_beam as the injection parameter. theta0 is the central angle,
 		# delta_theta is the FWHM of psi squared. x0 and y0 are the location of the beam
@@ -233,6 +241,17 @@ class dirac_sheet:
 		self.rv2_edgeX=self.rv2_edge[:,:,1]|self.rv2_edge[:,:,3]
 		self.rv2_edgeY=self.rv2_edge[:,:,0]|self.rv2_edge[:,:,2]
 
+	
+	def set_Afield_mat(self,Ax,Ay):
+		if np.sum(np.abs(Ax)+np.abs(Ay))==0:
+			self.Bfiled=False
+		else:
+			self.Bfield=True
+			
+		self.iAxAy1=1i*Ax[1::2,0::2]-Ay[1::2,0::2]
+		self.iAxAy2=1i*Ax[0::2,1::2]-Ay[0::2,1::2]
+		self.iAxAy3=1i*Ax[1::2,1::2]+Ay[1::2,1::2]
+		self.iAxAy4=1i*Ax[0::2,0::2]+Ay[0::2,0::2]
 		
 		
 	def set_Absorb_mat(self,Absorb_mat):
@@ -294,6 +313,11 @@ class dirac_sheet:
 		if self.massorV:
 			self.out=(1/(2*1j+self.D_t*self.mminusV1))*((2*1j-self.D_t*self.mminusV1)*self.v1-(2*1j*self.D_t/self.D_x)*(self.u1-np.roll(self.u1,1,axis=1))+(2*self.D_t/self.D_y)*(np.roll(self.u2,-1,axis=0)-self.u2))		
 			self.out2=(1/(2*1j+self.D_t*self.mminusV2))*((2*1j-self.D_t*self.mminusV2)*self.v2-(2*1j*self.D_t/self.D_x)*(np.roll(self.u2,-1,axis=1)-self.u2)+(2*self.D_t/self.D_y)*(self.u1-np.roll(self.u1,1,axis=0)))
+		elif self.Bfield:
+			self.out=(1/(2*1j+self.D_t*self.mminusV1))*((2*1j-self.D_t*self.mminusV1)*self.v1-(2*1j*self.D_t/self.D_x)*(self.u1-np.roll(self.u1,1,axis=1))+(2*self.D_t/self.D_y)*(np.roll(self.u2,-1,axis=0)-self.u2)
+				+0.5*1i*D_t*self.iAxAy1.*(self.u1+np.roll(self.u1,-1,axis=1)+self.u2+np.roll(self.u2,1,axis=0)))		
+			self.out2=(1/(2*1j+self.D_t*self.mminusV2))*((2*1j-self.D_t*self.mminusV2)*self.v2-(2*1j*self.D_t/self.D_x)*(np.roll(self.u2,-1,axis=1)-self.u2)+(2*self.D_t/self.D_y)*(self.u1-np.roll(self.u1,1,axis=0))
+				+0.5*1i*D_t*self.iAxAy2.*(self.u1+np.roll(self.u1,-1,axis=0)+self.u2+np.roll(self.u2,1,axis=1)))		
 		else:
 			self.out=(1/(2*1j))*((2*1j)*self.v1-(2*1j*self.D_t/self.D_x)*(self.u1-np.roll(self.u1,1,axis=1))+(2*self.D_t/self.D_y)*(np.roll(self.u2,-1,axis=0)-self.u2))		
 			self.out2=(1/(2*1j))*((2*1j)*self.v2-(2*1j*self.D_t/self.D_x)*(np.roll(self.u2,-1,axis=1)-self.u2)+(2*self.D_t/self.D_y)*(self.u1-np.roll(self.u1,1,axis=0)))
@@ -313,6 +337,11 @@ class dirac_sheet:
 		if self.massorV:
 			self.out=(~self.rNPu1)*(1/(2*1j-self.D_t*self.mplusV3))*((2*1j+self.D_t*self.mplusV3)*self.u1-(2*1j*self.D_t/self.D_x)*(np.roll(self.v1,-1,axis=1)-self.v1)-(2*self.D_t/self.D_y)*(np.roll(self.v2,-1,axis=0)-self.v2))
 			self.out2=(~self.rNPu2)*(1/(2*1j-self.D_t*self.mplusV4))*((2*1j+self.D_t*self.mplusV4)*self.u2-(2*1j*self.D_t/self.D_x)*(self.v2-np.roll(self.v2,1,axis=1))-(2*self.D_t/self.D_y)*(self.v1-np.roll(self.v1,1,axis=0)))
+		elif self.Bfield:
+			self.out=(~self.rNPu1)*(1/(2*1j-self.D_t*self.mplusV3))*((2*1j+self.D_t*self.mplusV3)*self.u1-(2*1j*self.D_t/self.D_x)*(np.roll(self.v1,-1,axis=1)-self.v1)-(2*self.D_t/self.D_y)*(np.roll(self.v2,-1,axis=0)-self.v2)
+				+0.5*1i*D_t*self.iAxAy3.*(self.v1+np.roll(self.v1,1,axis=1)+self.v2+np.roll(self.v2,1,axis=0)))		
+			self.out2=(~self.rNPu2)*(1/(2*1j-self.D_t*self.mplusV4))*((2*1j+self.D_t*self.mplusV4)*self.u2-(2*1j*self.D_t/self.D_x)*(self.v2-np.roll(self.v2,1,axis=1))-(2*self.D_t/self.D_y)*(self.v1-np.roll(self.v1,1,axis=0)))
+				+0.5*1i*D_t*self.iAxAy4.*(self.v1+np.roll(self.v1,-1,axis=0)+self.v2+np.roll(self.v2,-1,axis=1)))		
 		else:
 			self.out=(~self.rNPu1)*(1/(2*1j))*((2*1j)*self.u1-(2*1j*self.D_t/self.D_x)*(np.roll(self.v1,-1,axis=1)-self.v1)-(2*self.D_t/self.D_y)*(np.roll(self.v2,-1,axis=0)-self.v2))
 			self.out2=(~self.rNPu2)*(1/(2*1j))*((2*1j)*self.u2-(2*1j*self.D_t/self.D_x)*(self.v2-np.roll(self.v2,1,axis=1))-(2*self.D_t/self.D_y)*(self.v1-np.roll(self.v1,1,axis=0)))
