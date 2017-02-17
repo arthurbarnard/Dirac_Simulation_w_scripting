@@ -114,9 +114,13 @@ def main():
 						if is_inline(line,"wave drive style"):
 							if line.split("\t",1)[1].find("gauss")>=0:
 								inject_style=1
+								print "test"
 							elif line.split("\t",1)[1].find("plane wave")>=0:
 								inject_style=2
-									
+								print "test"
+							elif line.split("\t",1)[1].find("pulse")>=0:
+								inject_style=3
+								print "test"
 									
 	#makes the generalized sweep vector
 	sweep_num=np.linspace(sweep_params[0],sweep_params[1],sweep_params[2])

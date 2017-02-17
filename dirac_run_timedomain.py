@@ -48,11 +48,15 @@ def Run_Dirac(initfile,p0,drivestyle,drive_param,plot_results,save_time,N_timest
 			if 't' in mat: t=mat['t']
 			
 			
-		
+
+			
 	if not os.path.exists(outpath):
 		os.makedirs(outpath)
 		
 	myDirac=dirac_sheet(0,(Nx,Ny),dt,dx,Xoffset,Yoffset)
+	
+	if drivestyle==3:
+		psi_mean=np.zeros(myDirac.u1.shape)
 	#sets properties that were specified in the .mat file. If you don't want 
 	if 'V' in mat: myDirac.set_V(V*Vmult)
 	if 'n0' in mat:
@@ -70,7 +74,11 @@ def Run_Dirac(initfile,p0,drivestyle,drive_param,plot_results,save_time,N_timest
 	
 	if drivestyle==1:
 		myDirac.set_gaussian_beam(p0,drive_param[0]*np.pi/180,drive_param[1]*np.pi/180,drive_param[2],drive_param[3])
-	
+	if drivestyle==3:
+		myDirac.set_gaussian_beam(p0,drive_param[0]*np.pi/180,drive_param[1]*np.pi/180,drive_param[2],drive_param[3])
+		myDirac.set_gaussian_time(drive_param[4])
+		print drive_param[4]
+		
 	if 't' in locals(): myDirac.t=float(t)
 	if 'u1' in locals():
 		myDirac.u1=u1
@@ -99,6 +107,9 @@ def Run_Dirac(initfile,p0,drivestyle,drive_param,plot_results,save_time,N_timest
 		print toc-tic
 		
 		tic = time.time()
+		
+		if drivestyle==3:
+			psi_mean+=np.abs(myDirac.u1)**2+np.abs(myDirac.u2)**2+np.abs(myDirac.v1)**2+np.abs(myDirac.v2)**2
 		
 		# if instructed, update the gui every 10 timesteps. plots a component of psi on the left, and psisqr on the right
 		if plot_results: 
@@ -130,6 +141,9 @@ def Run_Dirac(initfile,p0,drivestyle,drive_param,plot_results,save_time,N_timest
 	mdict['Bmult']=Bmult
 	mdict['Vmult']=Vmult
 	
+	if drivestyle==3:	
+		mdict['psi_mean']=psi_mean
+		
 	scipy.io.savemat(outpath+outfilename+'.mat',mdict)
 	
 	#output npz data files

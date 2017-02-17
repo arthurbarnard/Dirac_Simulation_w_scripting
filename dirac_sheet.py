@@ -48,6 +48,7 @@ class dirac_sheet:
 		self.theta=0				#Drive wave-vector direction
 		self.massorV=False			#encodes whether m or V is nonzero
 		self.Bfiled=False
+		self.gauss_time=0
 		self.px=self.p0*np.cos(self.theta)
 		self.py=self.p0*np.sin(self.theta)
 		self.y, self.x = np.mgrid[slice((0-round(self.Ngrid_y/2)),(self.Ngrid_y-round(self.Ngrid_y/2)),1),
@@ -160,6 +161,10 @@ class dirac_sheet:
 			self.v10[self.rDv1]+=np.pi*self.p0/N_integrate*np.exp(-(theta-theta0)**2/2/delta_theta**2)*np.exp(1j*(self.px*(self.xhalf[self.rDv1]-x0)+self.py*(self.y[self.rDv1]-y0)+self.phi_p))
 			self.v20[self.rDv2]+=np.pi*self.p0/N_integrate*np.exp(-(theta-theta0)**2/2/delta_theta**2)*np.exp(1j*(self.px*(self.x[self.rDv2]-x0)+self.py*(self.yhalf[self.rDv2]-y0)+self.phi_p))
 	
+	def set_gaussian_time(self,t0):
+		self.gauss_time=t0
+		print t0
+		
 	def get_pos_mat(self):
 		#outputs the stiched X,Y coordinates; can be useful for defining boundary conditions
 		Xtot_out=np.zeros((self.x.shape[0]*2,self.x.shape[1]*2))
@@ -302,8 +307,12 @@ class dirac_sheet:
 		self.t+=self.D_t/2.0
 		
 		#introduce the drive wave to the u-lattice
-		self.u1[self.rDu1]+=self.Drive_coupling*self.u10[self.rDu1]*np.exp(-1j*self.p0*self.t)
-		self.u2[self.rDu2]+=self.Drive_coupling*self.u20[self.rDu2]*np.exp(-1j*self.p0*self.t)
+		if self.gauss_time>0:
+			self.u1[self.rDu1]+=np.exp(-(self.t-3*self.gauss_time)**2/2/self.gauss_time**2)*self.Drive_coupling*self.u10[self.rDu1]*np.exp(-1j*self.p0*self.t)
+			self.u2[self.rDu2]+=np.exp(-(self.t-3*self.gauss_time)**2/2/self.gauss_time**2)*self.Drive_coupling*self.u20[self.rDu2]*np.exp(-1j*self.p0*self.t)
+		else:			
+			self.u1[self.rDu1]+=self.Drive_coupling*self.u10[self.rDu1]*np.exp(-1j*self.p0*self.t)
+			self.u2[self.rDu2]+=self.Drive_coupling*self.u20[self.rDu2]*np.exp(-1j*self.p0*self.t)
 		
 		#Apply absorption
 		self.u1[self.rAu1]*=self.Abs_rate
