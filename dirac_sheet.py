@@ -308,8 +308,8 @@ class dirac_sheet:
 		
 		#introduce the drive wave to the u-lattice
 		if self.gauss_time>0:
-			self.u1[self.rDu1]+=np.exp(-(self.t-3*self.gauss_time)**2/2/self.gauss_time**2)*self.Drive_coupling*self.u10[self.rDu1]*np.exp(-1j*self.p0*self.t)
-			self.u2[self.rDu2]+=np.exp(-(self.t-3*self.gauss_time)**2/2/self.gauss_time**2)*self.Drive_coupling*self.u20[self.rDu2]*np.exp(-1j*self.p0*self.t)
+			self.u1[self.rDu1]+=np.exp(-(self.t-2.0*self.gauss_time)**2/2.0/self.gauss_time**2)*self.Drive_coupling*self.u10[self.rDu1]*np.exp(-1j*self.p0*self.t)
+			self.u2[self.rDu2]+=np.exp(-(self.t-2.0*self.gauss_time)**2/2.0/self.gauss_time**2)*self.Drive_coupling*self.u20[self.rDu2]*np.exp(-1j*self.p0*self.t)
 		else:			
 			self.u1[self.rDu1]+=self.Drive_coupling*self.u10[self.rDu1]*np.exp(-1j*self.p0*self.t)
 			self.u2[self.rDu2]+=self.Drive_coupling*self.u20[self.rDu2]*np.exp(-1j*self.p0*self.t)
