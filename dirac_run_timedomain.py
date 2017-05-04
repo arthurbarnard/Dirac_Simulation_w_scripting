@@ -129,25 +129,25 @@ def Run_Dirac(initfile,p0,drivestyle,drive_param,plot_results,save_time,N_timest
 		#this block packages data and outputs into a .mat file.
 		if np.mod(i,1000)==0 or i>=N_timesteps-1:
 		
-		mdict={}
-		mdict['u1']=myDirac.u1
-		mdict['u2']=myDirac.u2
-		mdict['v1']=myDirac.v1
-		mdict['v2']=myDirac.v2
-		mdict['t']=myDirac.t
-		mdict['initfile']=initfile
-		mdict['p0']=p0
-		mdict['drivestyle']=drivestyle
-		mdict['drive_param']=drive_param
-		mdict['dt']=dt
-		mdict['Bmult']=Bmult
-		mdict['Vmult']=Vmult
-		
-		if drivestyle==3:	
-			mdict['psi_mean']=psi_mean
+			mdict={}
+			mdict['u1']=myDirac.u1
+			mdict['u2']=myDirac.u2
+			mdict['v1']=myDirac.v1
+			mdict['v2']=myDirac.v2
+			mdict['t']=myDirac.t
+			mdict['initfile']=initfile
+			mdict['p0']=p0
+			mdict['drivestyle']=drivestyle
+			mdict['drive_param']=drive_param
+			mdict['dt']=dt
+			mdict['Bmult']=Bmult
+			mdict['Vmult']=Vmult
 			
-		scipy.io.savemat(outpath+outfilename+'.mat',mdict)
-	
+			if drivestyle==3:	
+				mdict['psi_mean']=psi_mean
+				
+			scipy.io.savemat(outpath+outfilename+'.mat',mdict)
+		
 	#output npz data files
 	#np.savez_compressed(outpath+outfilename+'.npz', u1=myDirac.u1,u2=myDirac.u2,v1=myDirac.v1,v2=myDirac.v2,t=myDirac.t,initfile=initfile,p0=p0,
 	#	drivestyle=drivestyle, drive_param=drive_param,dt=dt,Bmult=Bmult,Vmult=Vmult)
