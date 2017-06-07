@@ -156,10 +156,10 @@ class dirac_sheet:
 			self.px=self.p0*np.cos(self.theta)
 			self.py=self.p0*np.sin(self.theta)
 			self.phi_p=np.arctan2(self.py,self.px)
-			self.u10[self.rDu1]+=np.pi*self.p0/N_integrate*np.exp(-(theta-theta0)**2/2/delta_theta**2)*np.exp(1j*(self.px*(self.x[self.rDu1]-x0)+self.py*(self.y[self.rDu1]-y0)))
-			self.u20[self.rDu2]+=np.pi*self.p0/N_integrate*np.exp(-(theta-theta0)**2/2/delta_theta**2)*np.exp(1j*(self.px*(self.xhalf[self.rDu2]-x0)+self.py*(self.yhalf[self.rDu2]-y0)))
-			self.v10[self.rDv1]+=np.pi*self.p0/N_integrate*np.exp(-(theta-theta0)**2/2/delta_theta**2)*np.exp(1j*(self.px*(self.xhalf[self.rDv1]-x0)+self.py*(self.y[self.rDv1]-y0)+self.phi_p))
-			self.v20[self.rDv2]+=np.pi*self.p0/N_integrate*np.exp(-(theta-theta0)**2/2/delta_theta**2)*np.exp(1j*(self.px*(self.x[self.rDv2]-x0)+self.py*(self.yhalf[self.rDv2]-y0)+self.phi_p))
+			self.u10[self.rDu1]+=np.pi*self.p0/N_integrate*np.exp(-(theta-theta0)**2/2/delta_theta**2)*np.exp(1j*(self.px*(self.x[self.rDu1]-x0)+self.py*(self.y[self.rDu1]-y0)+self.theta/2.0))
+			self.u20[self.rDu2]+=np.pi*self.p0/N_integrate*np.exp(-(theta-theta0)**2/2/delta_theta**2)*np.exp(1j*(self.px*(self.xhalf[self.rDu2]-x0)+self.py*(self.yhalf[self.rDu2]-y0)+self.theta/2.0))
+			self.v10[self.rDv1]+=np.pi*self.p0/N_integrate*np.exp(-(theta-theta0)**2/2/delta_theta**2)*np.exp(1j*(self.px*(self.xhalf[self.rDv1]-x0)+self.py*(self.y[self.rDv1]-y0)-self.theta/2.0))
+			self.v20[self.rDv2]+=np.pi*self.p0/N_integrate*np.exp(-(theta-theta0)**2/2/delta_theta**2)*np.exp(1j*(self.px*(self.x[self.rDv2]-x0)+self.py*(self.yhalf[self.rDv2]-y0)-self.theta/2.0))
 	
 	def set_gaussian_time(self,t0):
 		self.gauss_time=t0
